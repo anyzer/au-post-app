@@ -44,3 +44,4 @@ project/plugins/project/
 /.settings/
 
 config.conf
+*.pdf

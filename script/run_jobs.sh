@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
-source ./PROJECT_CONFIG
+path=`pwd`
 
-echo ${ENV}
+if [[ ${path} =~ "workspace_bi" ]]; then
+    echo "DEV workspace_bi"
+    source ./script/PROJECT_CONFIG
+    echo "post environment: <${ENV}>"
+    ./target/universal/stage/bin/bran_job ${ENV} ${FROM} ${TO}
+else
+    echo "PRODUCTION"
+    source ./PROJECT_CONFIG
+    echo "post environment: <${ENV}>"
+    ./stage/bin/bran_job ${ENV} ${FROM} ${TO}
+fi
 
-
-# Build the application. Pass appname as a parameter to sbt
-#$(aws ecr get-login --region $AWS_REGION --no-include-email)
-#
-#env JAVA_OPTS="-Xss2048k" sbt clean docker

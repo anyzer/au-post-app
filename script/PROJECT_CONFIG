@@ -1,4 +1,3 @@
 ENV=test
-ACCOUNT=992962979097
 FROM=shipment_details
 TO=order_summary
