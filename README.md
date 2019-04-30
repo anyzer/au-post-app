@@ -7,6 +7,10 @@ Connect to AU Post RESTFul API to GetAccount, CreateShipment, CreateLabel, Creat
     * copy target/universal/stage to execution folder
     * copy all files from script/ to execution folder
     
+### Environment
+    * test
+    * prod
+
 ### Execution
     * change config in the file <PROJECT_CONFIG>
     * create folder <order_summary> if not exists
@@ -14,4 +18,5 @@ Connect to AU Post RESTFul API to GetAccount, CreateShipment, CreateLabel, Creat
     * order summary should be saved in the folder order_summary
     * order summary naming convention: [account_orderId_date_hourMinSec.pdf]
         * Example: 1003498426_TB00079055_20190430_211254.pdf 
+ 
  
