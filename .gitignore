@@ -1,0 +1,46 @@
+*.class
+*.log
+.DS_Store
+dumped-file-s3/*
+data/*
+
+# sbt specific
+.cache
+.history
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
+.classpath
+.project
+
+# Intelli-J
+.idea
+.metals
+.bloop
+# ensime
+.ensime
+.ensime/
+.ensime_cache/
+.ensime-langserver.log
+/job-deps
+/kafka_client.keytab
+
+/bin/
+/.project
+/.cache-main
+/.cache-tests
+/.classpath
+/.project
+/.target/
+/data/
+/.settings/
+
+config.conf
