@@ -14,20 +14,24 @@ object Run {
 
     //=== get account ===
     val acc: String = GetAccount.getAccount(configPara.get).get
+    println("Get Account Res: \n" + acc)
     val account: Account = GetAccount.account(acc)
 
     //=== create shipments ===
     val shipment: String = CreateShipment.createShipment(account, configPara.get).get
+    println("Create Shipments Res: \n" + shipment)
     val shipments: response.Shipments = CreateShipment.shipments(shipment)
     val shipment_id: String = shipments.shipments.head.shipment_id
 
     //=== create print label ===
     val labelString: String = CreateLabel.createLabel(shipment_id, configPara.get).get
+    println("Create Label Res: \n" + labelString)
     val label: response.PrintLabels = CreateLabel.label(labelString)
-    Thread.sleep(6000)
+    Thread.sleep(9000)
 
     //=== create order from shipment ===
     val orderFromShipment: String = CreateOrderFromShipment.createOrderFromShipment(shipment_id, configPara.get).get
+    println("Order From Shipment Res: \n" + orderFromShipment)
     val orderFromShip: response.Order = CreateOrderFromShipment.orderFromShipment(orderFromShipment)
     val order_id: String = orderFromShip.order.order_id
 
