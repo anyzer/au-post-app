@@ -1,10 +1,10 @@
 package bran.post.utilities
 
-import bran.Input_Para
 import bran.post.base.request.response.Account
 import bran.post.base.request.{Item, Request_Shipment, Shipments}
 import bran.post.base.{Customer, response}
 import bran.post.constants.Constants
+import bran.post.helper.Input_Para
 import bran.post.utilities.base.RequestBase
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization.write
@@ -12,7 +12,6 @@ import org.json4s.native.JsonMethods.parse
 
 import scala.util.Try
 
-//j0cK0Ey6EpEAAAFqcHgg9k2P  Wa4K0EDmi2QAAAFqoaYg2Fbn
 object CreateShipment extends RequestBase {
 
   def createShipment(account: Account, postPara: Input_Para): Try[String] = {

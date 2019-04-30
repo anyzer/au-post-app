@@ -1,18 +1,16 @@
 package bran.post.utilities
 
-import bran.Input_Para
 import bran.post.base.request._
 import bran.post.base.{request, response}
 import bran.post.constants.Constants
-import bran.post.utilities.CreateShipment.getResponse
+import bran.post.helper.Input_Para
 import bran.post.utilities.base.RequestBase
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization.write
 import org.json4s.native.JsonMethods.parse
-
 import scala.util.Try
 
-object CreateLabel extends RequestBase{
+object CreateLabel extends RequestBase {
 
   def createLabel(shipment_id: String, postPara: Input_Para): Try[String] = {
     implicit val formats = DefaultFormats

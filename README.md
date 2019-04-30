@@ -12,6 +12,6 @@ Connect to AU Post RESTFul API to GetAccount, CreateShipment, CreateLabel, Creat
     * create folder <order_summary> if not exists
     * run script: ./run_jobs.sh  
     * order summary should be saved in the folder order_summary
-    * order summary naming convention: [orderId_date_hourMinSec.pdf]
-        * Example: TB00079055_20190430_211254.pdf 
+    * order summary naming convention: [account_orderId_date_hourMinSec.pdf]
+        * Example: 1003498426_TB00079055_20190430_211254.pdf 
  

@@ -1,6 +1,6 @@
 package bran.post.config
 
-import bran.Env
+import bran.post.helper.Env
 import com.typesafe.config.{Config, ConfigFactory}
 
 case class PostConfig(base_url: String, authorization: String, account: String,
