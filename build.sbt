@@ -1,3 +1,5 @@
+enablePlugins(JavaAppPackaging)
+
 name := "bran_job"
 
 version := "0.1"

@@ -23,40 +23,41 @@ object Run {
     val configPara: Option[Input_Para] = getConfig(args)
     println("Configuration: " + configPara)
 
-//    //=== get account ===
-//    val acc: String = GetAccount.getAccount(configPara.get).get
-//    println("Get Account: " + acc + "\n")
-//    val account: Account = GetAccount.account(acc)
-//
-//    //=== create shipments ===
-//    val shipment: String = CreateShipment.createShipment(account, configPara.get).get
-//    println("Shipment Response: " + shipment)
-//    val shipments: response.Shipments = CreateShipment.shipments(shipment)
-//
-//    val shipment_id: String = shipments.shipments.head.shipment_id
-//
-//    //=== create print label ===
-//    val labelString: String = CreateLabel.createLabel(shipment_id, configPara.get).get
-//    println("Print Label Response: " + labelString)
-//    val label: response.PrintLabels = CreateLabel.label(labelString)
-//
-//    //it need few seconds to process print label
-//    Thread.sleep(6000)
-//
-//    //=== create order from shipment ===
-//    val orderFromShipment: String = CreateOrderFromShipment.createOrderFromShipment(shipment_id, configPara.get).get
-//    println("Create Order from Shipment Response: " + orderFromShipment)
-//    val orderFromShip: response.Order = CreateOrderFromShipment.orderFromShipment(orderFromShipment)
-//
-//    val order_id: String = orderFromShip.order.order_id
-//    println(s"\norderFromShip.order.order_id: ${orderFromShip.order.order_id}\n")
-//
-//    //=== get order summary ===
-//    val formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
-//    val todayDate = LocalDateTime.now(ZoneId.of("Australia/Sydney")).format(formatter)
-//    val fileName = shipment_id + "_" + order_id + "_" + todayDate + ".pdf"
-//    val getOrderSummary = GetOrderSummary.getOrderSummary(order_id, configPara.get, fileName)
-//    println("Get Order Summary file: " + getOrderSummary)
+    //=== get account ===
+    val acc: String = GetAccount.getAccount(configPara.get).get
+    println("Get Account: " + acc + "\n")
+    val account: Account = GetAccount.account(acc)
+
+    //=== create shipments ===
+    val shipment: String = CreateShipment.createShipment(account, configPara.get).get
+    println("Shipment Response: " + shipment)
+    val shipments: response.Shipments = CreateShipment.shipments(shipment)
+
+    val shipment_id: String = shipments.shipments.head.shipment_id
+
+    //=== create print label ===
+    val labelString: String = CreateLabel.createLabel(shipment_id, configPara.get).get
+    println("Print Label Response: " + labelString)
+    val label: response.PrintLabels = CreateLabel.label(labelString)
+
+    //it need few seconds to process print label
+    Thread.sleep(6000)
+
+    //=== create order from shipment ===
+    val orderFromShipment: String = CreateOrderFromShipment.createOrderFromShipment(shipment_id, configPara.get).get
+    println("Create Order from Shipment Response: " + orderFromShipment)
+    val orderFromShip: response.Order = CreateOrderFromShipment.orderFromShipment(orderFromShipment)
+
+    val order_id: String = orderFromShip.order.order_id
+    println(s"\norderFromShip.order.order_id: ${orderFromShip.order.order_id}\n")
+
+    //=== get order summary ===
+    val formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+    val todayDate = LocalDateTime.now(ZoneId.of("Australia/Sydney")).format(formatter)
+    val fileName = order_id + "_" + todayDate + ".pdf"
+    println("base fileName: " + fileName)
+    val getOrderSummary = GetOrderSummary.getOrderSummary(order_id, configPara.get, fileName)
+    println("Get Order Summary file: " + getOrderSummary)
 
   }
 
@@ -69,9 +70,9 @@ object Run {
       Option(Input_Para(Env(args(0)), Folder(config.read_path), Folder(config.write_path), config))
     }
     else {
-      println("Sample command: <prod read/folder/ write/folder/> <test read/folder/ write/folder/> \n" +
-        "prod|test or " + "zero command line parameters default to test environment" +
-        "there should be 3 params, and first parameter should be either 'test' or 'prod'")
+      println("Sample command: <prod read/folder/ write/folder/> <test read/folder/ write/folder/> \n\n" +
+        "There should be either 1 or 3 params, and first parameter should be either 'test' or 'prod'\n\n"
+        )
       None
     }
   }

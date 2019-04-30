@@ -26,7 +26,7 @@ object CreateShipment extends RequestBase {
   def shipments(accountStr: String): response.Shipments = {
     implicit val formats = DefaultFormats
     val shipments: response.Shipments = parse(accountStr).extract[response.Shipments]
-    println(s"account_number = ${shipments.shipments.head.shipment_id}")
+    println(s"shipment_id = ${shipments.shipments.head.shipment_id}")
     println(s"charge to account = ${shipments.shipments.head.charge_to_account}")
     println(s"number of items = ${shipments.shipments.head.items.size}\n")
     shipments

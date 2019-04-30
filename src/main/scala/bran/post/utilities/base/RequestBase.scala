@@ -36,13 +36,13 @@ trait RequestBase {
         .option(HttpOptions.readTimeout(10000))
         .asString.body)
       case "GET_UTF" => Try {
-        val body = Http(url)
+        val body: Array[Byte] = Http(url)
           .charset(HttpConstants.utf8)
           .headers(requestHeaders)
           .option(HttpOptions.readTimeout(10000))
           .asBytes.body
         val temp_file_name = UUID.randomUUID().toString + "_" + request.get
-        Files.write(Paths.get("/order_summary/" + request.get), body, StandardOpenOption.CREATE)
+        Files.write(Paths.get("./order_summary/" + request.get), body, StandardOpenOption.CREATE)
         temp_file_name
       }
       case _ => Failure(new Exception("Operations options: POST, PUT, GET, GET_UTF"))
