@@ -14,5 +14,4 @@ object GetOrderSummary extends RequestBase {
 
     getResponse(postPara, url, "GET_UTF", Some(fileName))
   }
-
 }
