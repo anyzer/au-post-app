@@ -41,5 +41,7 @@ object Run {
     val fileName = configPara.get.postConfig.account + "_" + order_id + "_" + todayDate + ".pdf"
     val getOrderSummary = GetOrderSummary.getOrderSummary(order_id, configPara.get, fileName)
     println("Get Order Summary file: " + getOrderSummary)
+
+
   }
 }
