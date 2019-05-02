@@ -19,10 +19,10 @@ object MailerService {
   def sendMessage(subject: String, content: String, file: String): Try[Unit] = {
     implicit val formats = DefaultFormats
     val credential: APICredentials = parse(Source.fromFile("./credentials/credentials.json").mkString).extract[APICredentials]
-    val username = credential.auth_provider
-    val password = credential.client_secret.split("-")(1)
+    val username: String = credential.auth_provider
+    val password: String = credential.client_secret.split("-")(1)
 
-    val prop = new Properties()
+    val prop: Properties = new Properties()
     prop.put("mail.smtp.host", "smtp.gmail.com")
     prop.put("mail.smtp.port", "465")
     prop.put("mail.smtp.auth", "true")
@@ -34,17 +34,17 @@ object MailerService {
     })
 
     Try {
-      val message = new MimeMessage(session)
+      val message: MimeMessage = new MimeMessage(session)
       message.setFrom(new InternetAddress("not-reply@gmail.com"))
       message.setRecipients(Message.RecipientType.TO, credential.emails)
       message.setSubject(subject)
 
-      val messageBodyPart = new MimeBodyPart()
+      val messageBodyPart: MimeBodyPart = new MimeBodyPart()
       messageBodyPart.setText("Please find the attachment below\n" + content)
 
-      val messageBodyPart_attach = new MimeBodyPart()
-      val filename = "./order_summary/" + file
-      val source = new FileDataSource(filename)
+      val messageBodyPart_attach: MimeBodyPart = new MimeBodyPart()
+      val filename: String = "./order_summary/" + file
+      val source: FileDataSource = new FileDataSource(filename)
       messageBodyPart_attach.setDataHandler(new DataHandler(source))
       messageBodyPart_attach.setFileName(file)
 
