@@ -6,8 +6,6 @@ version := "0.1"
 
 scalaVersion := "2.12.8"
 
-val catsRetryVersion = "0.2.5"
-
 libraryDependencies ++= Seq(
   "com.typesafe"                        % "config"                          % "1.3.2",
   "net.databinder.dispatch"             %% "dispatch-core"                  % "0.13.4",
@@ -23,7 +21,5 @@ libraryDependencies ++= Seq(
   "com.google.oauth-client"             % "google-oauth-client-jetty"       % "1.28.0",
   "com.google.api-client"               % "google-api-client"               % "1.28.0",
   "com.sun.mail"                        % "javax.mail"                      % "1.6.2",
-  "com.github.cb372"                    %% "cats-retry-core"                % catsRetryVersion,
-  "com.github.cb372"                    %% "cats-retry-cats-effect"         % catsRetryVersion,
   "org.scalatest"                       %% "scalatest"                      % "3.0.5"     % Test
 )

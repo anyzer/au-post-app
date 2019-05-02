@@ -3,7 +3,11 @@ package bran.post.helper
 import java.time.{LocalDateTime, ZoneId}
 import java.time.format.DateTimeFormatter
 
+import bran.Order_File
+import bran.post.base.request.response.Account
+import bran.post.base.response
 import bran.post.config.PostConfig
+import bran.post.utilities._
 import com.google.gson.{JsonObject, JsonParser}
 
 import scala.util.Try
@@ -34,9 +38,59 @@ object Helper {
     }
   }
 
+
   def todayDate: String = LocalDateTime.now(ZoneId.of("Australia/Sydney"))
     .format(DateTimeFormatter
       .ofPattern("yyyyMMdd_HHmmss"))
+
+  def todayDate(format: String): String = {
+    LocalDateTime.now(ZoneId.of("Australia/Sydney"))
+      .format(DateTimeFormatter
+        .ofPattern(format))
+  }
+
+
+  def get_order_summary(configPara: Input_Para): Try[Order_File] = {
+    //=== get account ===
+    println("Get account")
+    val account: Try[Account] = GetAccount.getAccount(configPara)
+
+    //=== create shipments and return shipment_id ===
+    println("Get shipment")
+    val shipment_id: Try[String] = account
+      .map(CreateShipment
+        .createShipment(_, configPara))
+      .flatten
+      .map(_.shipments
+        .head
+        .shipment_id)
+
+    //=== create print label ===
+    println("Print label")
+    val label: Try[response.PrintLabels] = shipment_id
+      .map(CreateLabel
+        .createLabel(_, configPara)).flatten
+    Thread.sleep(9900)
+
+    //=== create order from shipment ===
+    println("Create order from shipment")
+    val orderFromShipment: Try[response.Order] = shipment_id
+      .map(CreateOrderFromShipment
+        .createOrderFromShipment(_, configPara)).flatten
+
+    val order_id: Try[String] = orderFromShipment
+      .map(_.order.order_id)
+
+    //=== get order summary ===
+    println("Get order summary")
+    order_id.map { x =>
+      val fileName: String = configPara.postConfig.account + "_" + x + "_" + Helper.todayDate + ".pdf"
+      GetOrderSummary
+        .getOrderSummary(x, configPara, fileName)
+      Order_File(x, fileName)
+    }
+  }
+
 
   def parseStrToJSON(str: String): Try[JsonObject] = {
     val parser = new JsonParser()

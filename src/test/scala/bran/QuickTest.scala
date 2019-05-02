@@ -1,14 +1,26 @@
 package bran
 
-import bran.post.helper.MailerService
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.services.gmail.Gmail
+import bran.post.config.PostConfig
+import bran.post.helper._
 import org.scalatest.FunSuite
+
+import scala.util.Try
 
 class QuickTest extends FunSuite {
 
   test("sending mails") {
-    MailerService.sendMessage("Do not reply - Order ", "\nFYI\n", "1003498426_TB00079094_20190430_225838.pdf")
+    ExcelHelper.getShipmentsDetails(Input_Para(Env("test"),
+      Folder("shipment_details"),
+      Folder("order_summary"),
+      PostConfig("https://digitalapi.auspost.com.au/test",
+        "Basic YzUyNmYy",
+        "1003498426",
+        "1003498426",
+        "05500426", "00500426", "shipment_details", "order_summary")), readString)
+  }
+
+  def readString(conf: Input_Para, str: Shipment_Details): Try[Unit] = {
+    Try(str.shipment_id)
   }
 
 }

@@ -1,9 +1,6 @@
 package bran
 
-import bran.post.base.request.response.Account
-import bran.post.base.response
-import bran.post.helper.{Helper, Input_Para, MailerService}
-import bran.post.utilities._
+import bran.post.helper._
 
 import scala.util.{Failure, Success, Try}
 
@@ -14,58 +11,30 @@ object Run {
     val configPara: Option[Input_Para] = Helper.getConfig(args)
     println(s"Configuration: ${configPara}")
 
-    get_order_summary(configPara.get)
-      .map { x =>
-        println("Success - created order summary")
+    configPara.get.env match {
+      case Env("test") => Helper.get_order_summary(configPara.get).map { x =>
+        println("Success - created order summary - test")
         MailerService
-          .sendMessage("Do not reply - Order " + x.order_id,
-            "\nFYI - Shipments Orders Summary\n",
+          .sendMessage("Do not reply - Order " + x.order_id + " - test",
+            "\nFYI - Shipments Orders Summary - test\n",
             x.order_summary_file)
       }.flatten match {
-      case Success(s) => println("Success - send as email attachment")
-      case Failure(f) => println(f.getMessage)
+        case Success(s) => println("Success - send as email attachment - test")
+        case Failure(f) => println(f.getMessage)
+      }
+      case Env("prod") => ExcelHelper.getShipmentsDetails(configPara.get, getOrderSummary) match {
+        case Success(s) => println("Success - send as email attachment")
+        case Failure(f) => println(f.getMessage)
+      }
+      case _ => println("Environment can only be either <test> or <prod>")
     }
+
   }
 
 
-  def get_order_summary(configPara: Input_Para): Try[Order_File] = {
-    //=== get account ===
-    println("Get account")
-    val account: Try[Account] = GetAccount.getAccount(configPara)
-
-    //=== create shipments and return shipment_id ===
-    println("Get shipment")
-    val shipment_id: Try[String] = account
-      .map(CreateShipment
-        .createShipment(_, configPara))
-      .flatten
-      .map(_.shipments
-        .head
-        .shipment_id)
-
-    //=== create print label ===
-    println("Print label")
-    val label: Try[response.PrintLabels] = shipment_id
-      .map(CreateLabel
-        .createLabel(_, configPara)).flatten
-    Thread.sleep(9900)
-
-    //=== create order from shipment ===
-    println("Create order from shipment")
-    val orderFromShipment: Try[response.Order] = shipment_id
-      .map(CreateOrderFromShipment
-        .createOrderFromShipment(_, configPara)).flatten
-
-    val order_id: Try[String] = orderFromShipment
-      .map(_.order.order_id)
-
-    //=== get order summary ===
-    println("Get order summary")
-    order_id.map { x =>
-      val fileName: String = configPara.postConfig.account + "_" + x + "_" + Helper.todayDate + ".pdf"
-      GetOrderSummary
-        .getOrderSummary(x, configPara, fileName)
-      Order_File(x, fileName)
-    }
+  def getOrderSummary(configPara: Input_Para, shipment_details: Shipment_Details): Try[Unit] = {
+    Success()
   }
+
+
 }
