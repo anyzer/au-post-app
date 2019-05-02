@@ -17,10 +17,10 @@ object Run {
     val configPara: Option[Input_Para] = Helper.getConfig(args)
     println("Configuration: " + configPara)
 
-    val order_summary: Try[Order_File] = order_summary(configPara.get)
+    val orders_summary: Try[Order_File] = get_order_summary(configPara.get)
 
-    order_summary.map(
-      x => MailerService.sendMessage("Do not reply - Order " + x.order_id,
+    orders_summary.map(x => MailerService
+      .sendMessage("Do not reply - Order " + x.order_id,
         "\nFYI Shipments Orders Summary\n",
         x.order_summary_file)) match {
       case Success(s) => println("Successfully send email " + s)
@@ -29,8 +29,8 @@ object Run {
   }
 
 
-  def order_summary(configPara: Input_Para): Try[Order_File] = {
-    Try{
+  def get_order_summary(configPara: Input_Para): Try[Order_File] = {
+    Try {
       //=== get account ===
       val acc: String = GetAccount.getAccount(configPara).get
       println("Get Account Res: \n" + acc)
