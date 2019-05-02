@@ -1,8 +1,5 @@
 package bran
 
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId}
-
 import bran.post.base.request.response.Account
 import bran.post.base.response
 import bran.post.helper.{Helper, Input_Para, MailerService}
@@ -15,53 +12,55 @@ case class Order_File(order_id: String, order_summary_file: String)
 object Run {
   def main(args: Array[String]): Unit = {
     val configPara: Option[Input_Para] = Helper.getConfig(args)
-    println("Configuration: " + configPara)
+    println(s"Configuration: ${configPara}")
 
-    val orders_summary: Try[Order_File] = get_order_summary(configPara.get)
-
-    orders_summary.map(x => MailerService
-      .sendMessage("Do not reply - Order " + x.order_id,
-        "\nFYI Shipments Orders Summary\n",
-        x.order_summary_file)) match {
-      case Success(s) => println("Successfully send email " + s)
+    get_order_summary(configPara.get)
+      .map { x =>
+        println("Success - created order summary")
+        MailerService
+          .sendMessage("Do not reply - Order " + x.order_id,
+            "\nFYI - Shipments Orders Summary\n",
+            x.order_summary_file)
+      }.flatten match {
+      case Success(s) => println("Success - send as email attachment")
       case Failure(f) => println(f.getMessage)
     }
   }
 
 
   def get_order_summary(configPara: Input_Para): Try[Order_File] = {
-    Try {
-      //=== get account ===
-      val acc: String = GetAccount.getAccount(configPara).get
-      println("Get Account Res: \n" + acc)
-      val account: Account = GetAccount.account(acc)
+    //=== get account ===
+    val account: Try[Account] = GetAccount.getAccount(configPara)
 
-      //=== create shipments ===
-      val shipment: String = CreateShipment.createShipment(account, configPara).get
-      println("Create Shipments Res: \n" + shipment)
-      val shipments: response.Shipments = CreateShipment.shipments(shipment)
-      val shipment_id: String = shipments.shipments.head.shipment_id
+    //=== create shipments and return shipment_id ===
+    val shipment_id: Try[String] = account
+      .map(CreateShipment
+        .createShipment(_, configPara))
+      .flatten
+      .map(_.shipments
+        .head
+        .shipment_id)
 
-      //=== create print label ===
-      val labelString: String = CreateLabel.createLabel(shipment_id, configPara).get
-      println("Create Label Res: \n" + labelString)
-      val label: response.PrintLabels = CreateLabel.label(labelString)
-      Thread.sleep(9000)
+    //=== create print label ===
+    val label: Try[response.PrintLabels] = shipment_id
+      .map(CreateLabel
+        .createLabel(_, configPara)).flatten
+    Thread.sleep(9900)
 
-      //=== create order from shipment ===
-      val orderFromShipment: String = CreateOrderFromShipment.createOrderFromShipment(shipment_id, configPara).get
-      println("Order From Shipment Res: \n" + orderFromShipment)
-      val orderFromShip: response.Order = CreateOrderFromShipment.orderFromShipment(orderFromShipment)
-      val order_id: String = orderFromShip.order.order_id
+    //=== create order from shipment ===
+    val orderFromShipment: Try[response.Order] = shipment_id
+      .map(CreateOrderFromShipment
+        .createOrderFromShipment(_, configPara)).flatten
 
-      //=== get order summary ===
-      val todayDate = LocalDateTime.now(ZoneId.of("Australia/Sydney"))
-        .format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
-      val fileName = configPara.postConfig.account + "_" + order_id + "_" + todayDate + ".pdf"
-      val getOrderSummary = GetOrderSummary.getOrderSummary(order_id, configPara, fileName)
-      println("Get Order Summary file: " + getOrderSummary)
+    val order_id: Try[String] = orderFromShipment
+      .map(_.order.order_id)
 
-      Order_File(order_id, fileName)
+    //=== get order summary ===
+    order_id.map { x =>
+      val fileName: String = configPara.postConfig.account + "_" + x + "_" + Helper.todayDate + ".pdf"
+      GetOrderSummary
+        .getOrderSummary(x, configPara, fileName)
+      Order_File(x, fileName)
     }
   }
 }

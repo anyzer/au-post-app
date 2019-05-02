@@ -1,5 +1,8 @@
 package bran.post.helper
 
+import java.time.{LocalDateTime, ZoneId}
+import java.time.format.DateTimeFormatter
+
 import bran.post.config.PostConfig
 import com.google.gson.{JsonObject, JsonParser}
 
@@ -30,6 +33,10 @@ object Helper {
       None
     }
   }
+
+  def todayDate: String = LocalDateTime.now(ZoneId.of("Australia/Sydney"))
+    .format(DateTimeFormatter
+      .ofPattern("yyyyMMdd_HHmmss"))
 
   def parseStrToJSON(str: String): Try[JsonObject] = {
     val parser = new JsonParser()

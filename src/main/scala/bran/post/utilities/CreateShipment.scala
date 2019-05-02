@@ -14,22 +14,22 @@ import scala.util.Try
 
 object CreateShipment extends RequestBase {
 
-  def createShipment(account: Account, postPara: Input_Para): Try[String] = {
+  def createShipment(account: Account, postPara: Input_Para): Try[response.Shipments] = {
     implicit val formats = DefaultFormats
-    val shipmentsJson: String = write(Shipments(List(createCaseClass(account))))
-    println("Shipment Request: " + shipmentsJson)
-
-    getResponse(postPara, Constants.url.CREATE_SHIPMENT, "post", Some(shipmentsJson))
+    getResponse(postPara, Constants.url.CREATE_SHIPMENT, "post",
+      Some(write(Shipments(List(createCaseClass(account))))))
+      .map(toCaseClass[response.Shipments](_))
+      .flatten
   }
 
-  def shipments(accountStr: String): response.Shipments = {
-    implicit val formats = DefaultFormats
-    val shipments: response.Shipments = parse(accountStr).extract[response.Shipments]
-    println(s"shipment_id = ${shipments.shipments.head.shipment_id}")
-    println(s"charge to account = ${shipments.shipments.head.charge_to_account}")
-    println(s"number of items = ${shipments.shipments.head.items.size}\n")
-    shipments
-  }
+  //  def shipments(accountStr: String): response.Shipments = {
+  //    implicit val formats = DefaultFormats
+  //    val shipments: response.Shipments = parse(accountStr).extract[response.Shipments]
+  //    println(s"shipment_id = ${shipments.shipments.head.shipment_id}")
+  //    println(s"charge to account = ${shipments.shipments.head.charge_to_account}")
+  //    println(s"number of items = ${shipments.shipments.head.items.size}\n")
+  //    shipments
+  //  }
 
   //create shipment for creating orders
   def createCaseClass(account: Account): Request_Shipment = {

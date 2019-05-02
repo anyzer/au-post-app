@@ -1,10 +1,11 @@
 package bran.post.utilities.base
 
 import java.nio.file.{Files, Paths, StandardOpenOption}
-import java.util.UUID
 import bran.post.helper.Input_Para
 import org.json4s.DefaultFormats
+import org.json4s.native.JsonMethods.parse
 import scalaj.http.{Http, HttpConstants, HttpOptions}
+
 import scala.util.{Failure, Try}
 
 trait RequestBase {
@@ -35,4 +36,11 @@ trait RequestBase {
     }
   }
 
+  def toCaseClass[T: Manifest](response: String): Try[T] = {
+    Try {
+      implicit val formats = DefaultFormats
+      val res: T = parse(response).extract[T]
+      res
+    }
+  }
 }

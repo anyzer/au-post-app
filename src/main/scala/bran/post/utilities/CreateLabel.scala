@@ -7,26 +7,26 @@ import bran.post.helper.Input_Para
 import bran.post.utilities.base.RequestBase
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization.write
-import org.json4s.native.JsonMethods.parse
+
 import scala.util.Try
 
 object CreateLabel extends RequestBase {
 
-  def createLabel(shipment_id: String, postPara: Input_Para): Try[String] = {
+  def createLabel(shipment_id: String, postPara: Input_Para): Try[response.PrintLabels] = {
     implicit val formats = DefaultFormats
-    val createLabel: String = write(createCaseClass(shipment_id))
-    println("Print Label Request: " + createLabel)
-
-    getResponse(postPara, Constants.url.CREATE_LABEL, "post", Some(createLabel))
+    getResponse(postPara, Constants.url.CREATE_LABEL, "post",
+      Some(write(createCaseClass(shipment_id))))
+      .map(toCaseClass[response.PrintLabels](_))
+      .flatten
   }
 
-  def label(labelStr: String): response.PrintLabels = {
-    implicit val formats = DefaultFormats
-    val label: response.PrintLabels = parse(labelStr).extract[response.PrintLabels]
-    println(s"message = ${label.message} - ${label.code}")
-    println(s"Shipment ID = ${label.labels.head.shipment_ids.head}\n")
-    label
-  }
+  //  def label(labelStr: String): response.PrintLabels = {
+  //    implicit val formats = DefaultFormats
+  //    val label: response.PrintLabels = parse(labelStr).extract[response.PrintLabels]
+  //    println(s"message = ${label.message} - ${label.code}")
+  //    println(s"Shipment ID = ${label.labels.head.shipment_ids.head}\n")
+  //    label
+  //  }
 
   //create label print
   def createCaseClass(shipmentid: String): request.PrintLabels = {
