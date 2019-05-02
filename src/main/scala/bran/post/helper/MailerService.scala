@@ -2,8 +2,9 @@ package bran.post.helper
 
 import java.util.Properties
 
+import javax.activation.{DataHandler, FileDataSource}
 import javax.mail._
-import javax.mail.internet.{InternetAddress, MimeMessage}
+import javax.mail.internet.{InternetAddress, MimeBodyPart, MimeMessage, MimeMultipart}
 import org.json4s.DefaultFormats
 import org.json4s.native.JsonMethods.parse
 
@@ -15,7 +16,7 @@ case class APICredentials(project_id: String, auth_uri: String, token_uri: Strin
 
 object MailerService {
 
-  def sendMessage(subject: String, content: String): Try[Unit] = {
+  def sendMessage(subject: String, content: String, file: String): Try[Unit] = {
     implicit val formats = DefaultFormats
     val credential: APICredentials = parse(Source.fromFile("src/main/resources/credentials.json").mkString).extract[APICredentials]
     val username = credential.auth_provider
@@ -38,8 +39,19 @@ object MailerService {
       message.setRecipients(Message.RecipientType.TO, credential.emails)
       message.setSubject(subject)
 
-      message.setText(content)
+      val messageBodyPart = new MimeBodyPart()
+      messageBodyPart.setText("Please find the attachment below\n" + content)
 
+      val messageBodyPart_attach = new MimeBodyPart()
+      val filename = "./order_summary/" + file
+      val source = new FileDataSource(filename)
+      messageBodyPart_attach.setDataHandler(new DataHandler(source))
+      messageBodyPart_attach.setFileName(file)
+
+      val multipart = new MimeMultipart()
+      multipart.addBodyPart(messageBodyPart)
+      multipart.addBodyPart(messageBodyPart_attach)
+      message.setContent(multipart)
 
       Transport.send(message)
     }
