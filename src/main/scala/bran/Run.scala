@@ -30,9 +30,11 @@ object Run {
 
   def get_order_summary(configPara: Input_Para): Try[Order_File] = {
     //=== get account ===
+    println("Get account")
     val account: Try[Account] = GetAccount.getAccount(configPara)
 
     //=== create shipments and return shipment_id ===
+    println("Get shipment")
     val shipment_id: Try[String] = account
       .map(CreateShipment
         .createShipment(_, configPara))
@@ -42,12 +44,14 @@ object Run {
         .shipment_id)
 
     //=== create print label ===
+    println("Print label")
     val label: Try[response.PrintLabels] = shipment_id
       .map(CreateLabel
         .createLabel(_, configPara)).flatten
     Thread.sleep(9900)
 
     //=== create order from shipment ===
+    println("Create order from shipment")
     val orderFromShipment: Try[response.Order] = shipment_id
       .map(CreateOrderFromShipment
         .createOrderFromShipment(_, configPara)).flatten
@@ -56,6 +60,7 @@ object Run {
       .map(_.order.order_id)
 
     //=== get order summary ===
+    println("Get order summary")
     order_id.map { x =>
       val fileName: String = configPara.postConfig.account + "_" + x + "_" + Helper.todayDate + ".pdf"
       GetOrderSummary

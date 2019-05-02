@@ -13,8 +13,7 @@ object CreateOrderFromShipment extends RequestBase {
 
   def createOrderFromShipment(shipment_id: String, postPara: Input_Para): Try[response.Order] = {
     implicit val formats = DefaultFormats
-    getResponse(postPara, Constants.url.CREATE_ORDER, "put",
-      Some(write(createCaseClass(shipment_id))))
+    getResponse(postPara, Constants.url.CREATE_ORDER, "put", Some(write(createCaseClass(shipment_id))))
       .map(toCaseClass[response.Order](_))
       .flatten
   }
