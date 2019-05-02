@@ -18,7 +18,7 @@ object MailerService {
 
   def sendMessage(subject: String, content: String, file: String): Try[Unit] = {
     implicit val formats = DefaultFormats
-    val credential: APICredentials = parse(Source.fromFile("./script/credentials.json").mkString).extract[APICredentials]
+    val credential: APICredentials = parse(Source.fromFile("./credentials/credentials.json").mkString).extract[APICredentials]
     val username = credential.auth_provider
     val password = credential.client_secret.split("-")(1)
 
