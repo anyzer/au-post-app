@@ -16,17 +16,4 @@ object GetAccount extends RequestBase {
       .map(toCaseClass[Account](_))
       .flatten
   }
-
-  //  def account(accountStr: String): Account = {
-  //    implicit val formats = DefaultFormats
-  //    val account: Account = parse(accountStr).extract[Account]
-  //    println(s"account_number = ${account.account_number}")
-  //    println(s"name = ${account.name}\n")
-  //    account
-  //  }
-
-  //  def account(accountStr: String): Try[Account] = {
-  //    println(s"Get Account: ${accountStr}")
-  //    toCaseClass[Account](accountStr)
-  //  }
 }

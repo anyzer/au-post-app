@@ -20,14 +20,6 @@ object CreateLabel extends RequestBase {
       .flatten
   }
 
-  //  def label(labelStr: String): response.PrintLabels = {
-  //    implicit val formats = DefaultFormats
-  //    val label: response.PrintLabels = parse(labelStr).extract[response.PrintLabels]
-  //    println(s"message = ${label.message} - ${label.code}")
-  //    println(s"Shipment ID = ${label.labels.head.shipment_ids.head}\n")
-  //    label
-  //  }
-
   //create label print
   def createCaseClass(shipmentid: String): request.PrintLabels = {
     val group_1: Group = Group("Parcel Post", "A4-4pp", true, 0, 0)

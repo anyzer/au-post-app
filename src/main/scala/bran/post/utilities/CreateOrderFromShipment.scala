@@ -19,18 +19,6 @@ object CreateOrderFromShipment extends RequestBase {
       .flatten
   }
 
-//  def orderFromShipment(orderStr: String): response.Order = {
-//    implicit val formats = DefaultFormats
-//    val orderFromShipment: response.Order = parse(orderStr).extract[response.Order]
-//    println(s"Order Id = ${orderFromShipment.order.order_id}")
-//    println(s"Order Shipment ID = ${orderFromShipment.order.shipments.head.shipment_id}")
-//    orderFromShipment.order.shipments.head.items.foreach { x =>
-//      println("Item_Id = " + x.item_id)
-//      println("Article Id = " + x.tracking_details.article_id)
-//    }
-//    orderFromShipment
-//  }
-
   //create order from shipment
   def createCaseClass(shipmentid: String): request.Request_OrderFromShipment = {
     val shipment = Shipment_Id(shipmentid)
