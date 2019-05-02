@@ -17,9 +17,9 @@ object Run {
     val configPara: Option[Input_Para] = Helper.getConfig(args)
     println("Configuration: " + configPara)
 
-    val order_file: Try[Order_File] = order_summary(configPara.get)
+    val order_summary: Try[Order_File] = order_summary(configPara.get)
 
-    order_file.map(
+    order_summary.map(
       x => MailerService.sendMessage("Do not reply - Order " + x.order_id,
         "\nFYI Shipments Orders Summary\n",
         x.order_summary_file)) match {

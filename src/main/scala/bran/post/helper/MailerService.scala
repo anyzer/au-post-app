@@ -56,5 +56,4 @@ object MailerService {
       Transport.send(message)
     }
   }
-
 }
