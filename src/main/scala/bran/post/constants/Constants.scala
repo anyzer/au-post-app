@@ -14,4 +14,7 @@ object Constants {
     val CREATE_ORDER = "/shipping/v1/orders"
   }
 
+  object rest {
+    val TIME_OUT = 20000
+  }
 }
