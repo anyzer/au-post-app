@@ -1,6 +1,6 @@
 package bran.post.base.response
 
-case class Errors (errors: List[Error])
+case class ResErrors (errors: List[Error])
 
 case class Error (code: String, name: String, message: String, field: String, context: Context)
 

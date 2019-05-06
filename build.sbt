@@ -15,8 +15,6 @@ libraryDependencies ++= Seq(
   "com.google.code.gson"                % "gson"                            % "2.8.5",
   "org.scalaj"                          %% "scalaj-http"                    % "2.4.1",
   "io.jvm.uuid"                         %% "scala-uuid"                     % "0.3.0",
-  "com.typesafe.play"                   %% "play-mailer"                    % "6.0.1",
-  "com.typesafe.play"                   %% "play-mailer-guice"              % "6.0.1",
   "com.google.apis"                     % "google-api-services-gmail"       % "v1-rev103-1.25.0",
   "com.google.oauth-client"             % "google-oauth-client-jetty"       % "1.28.0",
   "com.google.api-client"               % "google-api-client"               % "1.28.0",

@@ -10,7 +10,8 @@ import bran.post.config.PostConfig
 import bran.post.utilities._
 import com.google.gson.{JsonObject, JsonParser}
 
-import scala.util.Try
+import scala.util.control.NonFatal
+import scala.util.{Failure, Success, Try}
 
 case class Env(env: String)
 
@@ -52,11 +53,11 @@ object Helper {
 
   def get_order_summary(configPara: Input_Para): Try[Order_File] = {
     //=== get account ===
-    println("Get account")
+    println(s"\nGet account - ${configPara.env}")
     val account: Try[Account] = GetAccount.getAccount(configPara)
 
     //=== create shipments and return shipment_id ===
-    println("Get shipment")
+    println(s"\nCreate shipment - ${configPara.env}")
     val shipment_id: Try[String] = account
       .map(CreateShipment
         .createShipment(_, configPara))
@@ -66,14 +67,17 @@ object Helper {
         .shipment_id)
 
     //=== create print label ===
-    println("Print label")
+    println(s"\nCreate Print label - ${configPara.env}")
     val label: Try[response.PrintLabels] = shipment_id
       .map(CreateLabel
         .createLabel(_, configPara)).flatten
+
+    println("\nWait for label ...")
+
     Thread.sleep(9900)
 
     //=== create order from shipment ===
-    println("Create order from shipment")
+    println(s"\nCreate order from shipment - ${configPara.env}")
     val orderFromShipment: Try[response.Order] = shipment_id
       .map(CreateOrderFromShipment
         .createOrderFromShipment(_, configPara)).flatten
@@ -82,12 +86,25 @@ object Helper {
       .map(_.order.order_id)
 
     //=== get order summary ===
-    println("Get order summary")
+    println(s"\nGet order summary - ${configPara.env}")
     order_id.map { x =>
       val fileName: String = configPara.postConfig.account + "_" + x + "_" + Helper.todayDate + ".pdf"
       GetOrderSummary
         .getOrderSummary(x, configPara, fileName)
       Order_File(x, fileName)
+    }
+  }
+
+
+  @annotation.tailrec
+  def retry[T](n: Int)(fn: => T): T = {
+    Thread.sleep(500)
+    println(s"n ${n}")
+    println("Try Request ... ")
+    Try { fn } match {
+      case Success(x) => x
+      case Failure(e)  if (n > 1) => retry(n - 1)(fn)
+      case Failure(e) => throw e
     }
   }
 

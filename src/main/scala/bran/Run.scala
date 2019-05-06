@@ -22,10 +22,12 @@ object Run {
         case Success(s) => println("Success - send as email attachment - test")
         case Failure(f) => println(f.getMessage)
       }
+
       case Env("prod") => ExcelHelper.getShipmentsDetails(configPara.get, getOrderSummary) match {
         case Success(s) => println("Success - send as email attachment")
         case Failure(f) => println(f.getMessage)
       }
+
       case _ => println("Environment can only be either <test> or <prod>")
     }
 
