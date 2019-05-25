@@ -23,61 +23,22 @@ trait RequestBase {
     )
 
     method.toUpperCase match {
-      case "POST" => Helper.retry(3) {
-        getPost(url, request, requestHeaders, Some(postPara)) match {
-          case Success(s) if (!s.contains("errors")) => Success(s)
-          case Success(s) if (s.contains("errors")) => {
-            println(s)
-            Failure(new Exception("Errors in response"))
-          }
-          case _ => Failure(new Exception("Failure to get response"))
-        }
-      }
-      case "PUT" => Helper.retry(3) {
-        getPut(url, request, requestHeaders, Some(postPara)) match {
-          case Success(s) if (!s.contains("errors")) => Success(s)
-          case Success(s) if (s.contains("errors")) => {
-            println(s)
-            throw new Exception("Errors in response")
-          }
-          case _ => Failure(new Exception("Failure to get response"))
-        }
-      }
-      case "GET" => Helper.retry(3) {
-        getGet(url, request, requestHeaders, Some(postPara)) match {
-          case Success(s) if (!s.contains("errors")) => Success(s)
-          case Success(s) if (s.contains("errors")) => {
-            println(s)
-            throw new Exception("Errors in response")
-          }
-          case _ => Failure(new Exception("Failure to get response"))
-        }
-      }
-      case "GET_UTF" => Helper.retry(3) {
-        getGetUTF(url, request, requestHeaders, Some(postPara)) match {
-          case Success(s) if (!s.contains("errors")) => Success(s)
-          case Success(s) if (s.contains("errors")) => {
-            val t: String = s
-            println(s)
-            Failure(new Exception("Errors in response"))
-          }
-          case _ => Failure(new Exception("Failure to get response"))
-        }
-      }
+      case "POST" => getPost(url, request, requestHeaders, Some(postPara))
+      case "PUT" => getPut(url, request, requestHeaders, Some(postPara))
+      case "GET" => getGet(url, request, requestHeaders, Some(postPara))
+      case "GET_UTF" => getGetUTF(url, request, requestHeaders, Some(postPara))
       case _ => Failure(new Exception("Operations options: POST, PUT, GET, GET_UTF"))
     }
   }
 
-  def toCaseClass[T: Manifest](response: String): Try[T] = {
-    Try {
-      implicit val formats = DefaultFormats
-      val res: T = parse(response).extract[T]
-      res
-    }
+  def toCaseClass[T: Manifest](response: String): T = {
+    implicit val formats = DefaultFormats
+    val res: T = parse(response).extract[T]
+    res
   }
 
 
-//  ============= private method =================
+  //  ============= private method =================
 
 
   private def getGetUTF(url: String, request: Option[String], requestHeaders: Map[String, String], postPara: Option[Input_Para]): Try[String] = {

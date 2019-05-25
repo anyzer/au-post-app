@@ -17,7 +17,6 @@ object CreateLabel extends RequestBase {
     getResponse(postPara, Constants.url.CREATE_LABEL, "post",
       Some(write(createCaseClass(shipment_id))))
       .map(toCaseClass[response.PrintLabels](_))
-      .flatten
   }
 
   //create label print

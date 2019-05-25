@@ -14,6 +14,5 @@ object GetAccount extends RequestBase {
 
     getResponse(postPara, sub_url, "GET", None)
       .map(toCaseClass[Account](_))
-      .flatten
   }
 }

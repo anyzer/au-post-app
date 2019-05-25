@@ -19,7 +19,6 @@ object CreateShipment extends RequestBase {
     getResponse(postPara, Constants.url.CREATE_SHIPMENT, "post",
       Some(write(Shipments(List(createCaseClass(account))))))
       .map(toCaseClass[response.Shipments](_))
-      .flatten
   }
 
   //create shipment for creating orders

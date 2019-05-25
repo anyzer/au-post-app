@@ -74,7 +74,7 @@ object Helper {
 
     println("\nWait for label ...")
 
-    Thread.sleep(9900)
+//    Thread.sleep(9900)
 
     //=== create order from shipment ===
     println(s"\nCreate order from shipment - ${configPara.env}")
@@ -96,27 +96,38 @@ object Helper {
   }
 
 
-  @annotation.tailrec
-  def retry[T](n: Int)(fn: => T): T = {
-    Thread.sleep(500)
-    println(s"n ${n}")
-    println("Try Request ... ")
-    Try { fn } match {
-      case Success(x) => x
-      case Failure(e)  if (n > 1) => retry(n - 1)(fn)
-      case Failure(e) => throw e
+  //  @annotation.tailrec
+  //  def retry[T](n: Int)(fn: => T): T = {
+  //    Thread.sleep(500)
+  //    println(s"n ${n}")
+  //    println("Try Request ... ")
+  //    Try { fn } match {
+  //      case Success(x) => x
+  //      case Failure(e)  if (n > 1) => retry(n - 1)(fn)
+  //      case Failure(e) => throw e
+  //    }
+  //  }
+  def retry[T](fib: List[Int])(f: => T): Try[T] =
+    Try(f).recoverWith {
+      case ex =>
+        fib match {
+          case Nil => Failure(ex)
+          case head :: rest =>
+            println("Retry Head: " + head)
+            Thread.sleep(head * 1000)
+            retry(rest)(f)
+        }
     }
-  }
 
 
   def parseStrToJSON(str: String): Try[JsonObject] = {
     val parser = new JsonParser()
-    Try{
+    Try {
       parser.parse(str).getAsJsonObject
     }
   }
 
-  def checkStatusCode(jsonString: String) : Int = {
+  def checkStatusCode(jsonString: String): Int = {
     val parser: JsonParser = new JsonParser()
     val jsonobj: JsonObject = parser.parse(jsonString).getAsJsonObject
     val statusCode = jsonobj.get("code").getAsInt
