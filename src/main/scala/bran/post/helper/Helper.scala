@@ -6,7 +6,9 @@ import java.time.format.DateTimeFormatter
 import bran.Order_File
 import bran.post.base.request.response.Account
 import bran.post.base.response
+import bran.post.base.response.{OrderFromShipment, Order_List}
 import bran.post.config.PostConfig
+import bran.post.constants.Constants
 import bran.post.utilities._
 import com.google.gson.{JsonObject, JsonParser}
 
@@ -25,9 +27,9 @@ case class Account_Details(account_number: String, name: String, address_lines: 
 object Helper {
 
   def getConfig(args: Array[String]): Option[Input_Para] = {
-    if (args.length == 3 && (args(0) == "test" || args(0) == "prod"))
+    if (args.length == 3 && (args(0) == "test" || args(0) == "prod" || args(0) == "teest"))
       Option(Input_Para(Env(args(0)), Folder(args(1)), Folder(args(2)), PostConfig.get(Env(args(0)))))
-    else if (args.length == 1 && (args(0) == "test" || args(0) == "prod")) {
+    else if (args.length == 1 && (args(0) == "test" || args(0) == "prod" || args(0) == "teest")) {
       val config: PostConfig = PostConfig.get(Env(args(0)))
       Option(Input_Para(Env(args(0)), Folder(config.read_path), Folder(config.write_path), config))
     }
@@ -48,6 +50,17 @@ object Helper {
     LocalDateTime.now(ZoneId.of("Australia/Sydney"))
       .format(DateTimeFormatter
         .ofPattern(format))
+  }
+
+
+  def get_order_list(configPara: Input_Para): Try[Unit] = {
+    val orderList: Try[Order_List] = GetOrderList.getOrderList(0, configPara, "fileName")
+    orderList.map(x => println(x.orders.size))
+
+
+
+
+    Success()
   }
 
 

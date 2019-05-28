@@ -23,6 +23,8 @@ object Run {
         case Failure(f) => println(f.getMessage)
       }
 
+      case Env("teest") => Helper.get_order_list(configPara.get)
+
       case Env("prod") => ExcelHelper.getShipmentsDetails(configPara.get, getOrderSummary) match {
         case Success(s) => println("Success - send as email attachment")
         case Failure(f) => println(f.getMessage)

@@ -23,4 +23,7 @@ object Constants {
     val FIBS: List[Int] = List(1, 2, 3, 5, 8)
   }
 
+  val NUMBER_OF_ORDERS_PER_REQUEST = 500
+  val LIST_OF_CONSIGMENT_ID = List("111JD5250352", "111JD5233613", "111JD5232471", "111JD5230823", "111JD5230806")
+
 }

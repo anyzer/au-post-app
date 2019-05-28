@@ -1,5 +1,6 @@
 package bran.post.base.response
 
+import bran.post.base.Customer
 import bran.post.base.request.response.Price
 
 case class Shipments(shipments: List[Response_Shipment])
@@ -11,6 +12,8 @@ case class Response_Shipment(
                      customer_reference_1: Option[String],
                      customer_reference_2: Option[String],
                      sender_references: Option[List[String]],
+                     from: Option[Customer],
+                     to: Option[Customer],
                      items: List[Item],
                      options: Option_Shipment,
                      shipment_summary: Shipment_Summary,
