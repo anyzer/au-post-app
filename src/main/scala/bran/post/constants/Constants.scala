@@ -12,6 +12,8 @@ object Constants {
     val CREATE_LABEL = "/shipping/v1/labels"
 
     val CREATE_ORDER = "/shipping/v1/orders"
+
+    val LIST_ORDERS = "/shipping/v1/orders?offset={ORDER_OFFSET}&number_of_orders={NUM_OF_ORDERS}"
   }
 
   object rest {

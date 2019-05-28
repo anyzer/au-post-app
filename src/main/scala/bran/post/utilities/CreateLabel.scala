@@ -14,9 +14,11 @@ object CreateLabel extends RequestBase {
 
   def createLabel(shipment_id: String, postPara: Input_Para): Try[response.PrintLabels] = {
     implicit val formats = DefaultFormats
-    getResponse(postPara, Constants.url.CREATE_LABEL, "post",
+    val label = getResponse(postPara, Constants.url.CREATE_LABEL, "post",
       Some(write(createCaseClass(shipment_id))))
-      .map(toCaseClass[response.PrintLabels](_))
+
+    print("Create Label: " + label)
+    label.map(toCaseClass[response.PrintLabels](_))
   }
 
   //create label print

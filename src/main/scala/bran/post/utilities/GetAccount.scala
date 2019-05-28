@@ -12,7 +12,9 @@ object GetAccount extends RequestBase {
   def getAccount(postPara: Input_Para): Try[Account] = {
     val sub_url = s"${Constants.url.GET_ACCOUNT}${postPara.postConfig.account}"
 
-    getResponse(postPara, sub_url, "GET", None)
-      .map(toCaseClass[Account](_))
+    val acc: Try[String] = getResponse(postPara, sub_url, "GET", None)
+    print("Get Account: " + acc)
+
+    acc.map(toCaseClass[Account](_))
   }
 }

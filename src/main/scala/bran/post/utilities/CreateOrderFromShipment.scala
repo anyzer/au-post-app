@@ -23,7 +23,6 @@ object CreateOrderFromShipment extends RequestBase {
       val rrr: Order = toCaseClass[response.Order](res.get)
 
       rrr
-
     }
   }
 

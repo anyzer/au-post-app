@@ -16,9 +16,11 @@ object CreateShipment extends RequestBase {
 
   def createShipment(account: Account, postPara: Input_Para): Try[response.Shipments] = {
     implicit val formats = DefaultFormats
-    getResponse(postPara, Constants.url.CREATE_SHIPMENT, "post",
+    val shipments: Try[String] = getResponse(postPara, Constants.url.CREATE_SHIPMENT, "post",
       Some(write(Shipments(List(createCaseClass(account))))))
-      .map(toCaseClass[response.Shipments](_))
+
+    print("Shipments: " + shipments)
+    shipments.map(toCaseClass[response.Shipments](_))
   }
 
   //create shipment for creating orders
@@ -28,10 +30,10 @@ object CreateShipment extends RequestBase {
 
     val to: Customer = Customer("Blocked Carl", Some("business Name"), None, List("PO Box 123 to"),
       "Rye", "3941", "VIC", Some("0356567567"), Some("carl@gmai.co"),
-      Some("please leave behind shed"), Some("1234567890"))
+      Some("please leave behind shed"), Some("1234567890"), None)
 
     val from: Customer = Customer(account.name, None, None, List("111 Bourke St"),
-      "Melbourne", "3000", "VIC", None, None, None, Some("1234567890"))
+      "Melbourne", "3000", "VIC", None, None, None, Some("1234567890"), None)
 
     val shipment: Request_Shipment = Request_Shipment(Some("My second shipment ref"), None, "cb1234_1", "cb1234_2", from, to,
       List(item1, item2), None, None)

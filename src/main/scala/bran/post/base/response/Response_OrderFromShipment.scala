@@ -2,8 +2,11 @@ package bran.post.base.response
 
 case class Order (order: OrderFromShipment)
 
-case class OrderFromShipment (order_id: String, order_reference: String, order_creation_date: String,
-                              order_summary: Order_Summary, shipments: List[Response_Shipment],
+case class OrderFromShipment (order_id: String,
+                              order_reference: String,
+                              order_creation_date: String,
+                              order_summary: Order_Summary,
+                              shipments: List[Response_Shipment],
                               payment_method: String)
 
 case class Order_Summary (total_cost: Double, total_cost_ex_gst: Double, total_gst: Double, status: String,

@@ -66,6 +66,8 @@ object Helper {
         .head
         .shipment_id)
 
+    println("Shipment ID" + shipment_id)
+
     //=== create print label ===
     println(s"\nCreate Print label - ${configPara.env}")
     val label: Try[response.PrintLabels] = shipment_id
@@ -74,7 +76,7 @@ object Helper {
 
     println("\nWait for label ...")
 
-//    Thread.sleep(9900)
+    Thread.sleep(9900)
 
     //=== create order from shipment ===
     println(s"\nCreate order from shipment - ${configPara.env}")

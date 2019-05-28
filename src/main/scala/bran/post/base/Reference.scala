@@ -11,5 +11,6 @@ case class Customer(
                      phone: Option[String],
                      email: Option[String],
                      delivery_instructions: Option[String],
-                     apcn: Option[String]
+                     apcn: Option[String],
+                     country: Option[String]
                    )
