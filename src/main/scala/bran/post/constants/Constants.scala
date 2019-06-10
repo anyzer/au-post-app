@@ -14,6 +14,8 @@ object Constants {
     val CREATE_ORDER = "/shipping/v1/orders"
 
     val LIST_ORDERS = "/shipping/v1/orders?offset={ORDER_OFFSET}&number_of_orders={NUM_OF_ORDERS}"
+
+    val LIST_SHIPMENTS = "/shipping/v1/shipments?offset={SHIPMENT_OFFSET}&number_of_shipments={NUM_OF_SHIPMENTS}"
   }
 
   object rest {
@@ -24,6 +26,8 @@ object Constants {
   }
 
   val NUMBER_OF_ORDERS_PER_REQUEST = 500
+  val NUMBER_OF_SHIPMENTS_PER_REQUEST = 500
+
   val LIST_OF_CONSIGMENT_ID = List("111JD5250352", "111JD5233613", "111JD5232471", "111JD5230823", "111JD5230806")
 
 }

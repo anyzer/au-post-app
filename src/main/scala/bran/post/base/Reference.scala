@@ -14,3 +14,12 @@ case class Customer(
                      apcn: Option[String],
                      country: Option[String]
                    )
+
+case class Shipments_Details(shipment_id: String,
+                             shipment_status: String,
+                             items_details: List[Items_Details]
+                            )
+
+case class Items_Details(item_id: String,
+                         consignment_id: String,
+                        )

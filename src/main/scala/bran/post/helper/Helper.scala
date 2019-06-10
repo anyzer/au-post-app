@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter
 
 import bran.Order_File
 import bran.post.base.request.response.Account
-import bran.post.base.response
-import bran.post.base.response.{OrderFromShipment, Order_List}
+import bran.post.base.{Items_Details, Shipments_Details, response}
+import bran.post.base.response.{OrderFromShipment, Order_List, Response_Shipment, Shipments}
 import bran.post.config.PostConfig
 import bran.post.constants.Constants
 import bran.post.utilities._
@@ -53,18 +53,59 @@ object Helper {
   }
 
 
-  def get_order_list(configPara: Input_Para): Try[Unit] = {
-    val orderList: Try[Order_List] = GetOrderList.getOrderList(0, configPara, "fileName")
-    orderList.map(x => println(x.orders.size))
-
-
-
-
-    Success()
+  def get_shipments_list(configPara: Input_Para): Try[List[Response_Shipment]] = {
+    val shipments: Try[Shipments] = GetShipmentList.getShipmentList(0, configPara, "fileName")
+    shipments.map { x =>
+      println("There are " + x.shipments.size + " shipments")
+      println("In Pagination, there are " + x.pagination.map(y => y.total_number_of_records) + "shipments")
+      x.shipments
+    }
   }
 
 
-  def get_order_summary(configPara: Input_Para): Try[Order_File] = {
+  def getShipmentsDetails(list: List[Response_Shipment]): List[Shipments_Details] = {
+    list.map { x =>
+      val shipment_id: String = x.shipment_id
+      val shipment_status: String = x.shipment_summary.status
+
+      val items: List[Items_Details] = x.items.map { m =>
+        val item_id = m.item_id
+        val item_consignment_id = m.tracking_details.consignment_id
+        Items_Details(item_id, item_consignment_id)
+      }
+
+      println(shipment_id + " => " + items)
+      Shipments_Details(shipment_id, shipment_status, items)
+    }
+  }
+
+
+  def getShipmentConsignmentMap(consignments_id: List[String], shipments_details: List[Shipments_Details]): Map[String, Option[String]] = {
+    consignments_id.map { x => compareConsignment(x, shipments_details)}
+      .flatten.toMap
+  }
+
+
+  // One Consignment has a matching Shipments
+  def compareConsignment(consignment_id: String, shipments_details: List[Shipments_Details]): Map[String, Option[String]] = {
+    val shipment = shipments_details.filter { x => itemsWithConsignment(consignment_id, x.items_details)}
+    if(shipment.size != 1) {
+      Map(consignment_id -> None)
+    }else {
+      Map(consignment_id -> Some(shipment.head.shipment_id))
+    }
+  }
+
+
+  // For a certain shipment, all items should have the same consignment id
+  def itemsWithConsignment(consignment_id: String, items_details: List[Items_Details]): Boolean = {
+    items_details.filter {
+      _.consignment_id == consignment_id
+    }.size == items_details.size
+  }
+
+
+  def create_shipments_labels(configPara: Input_Para): Try[Order_File] = {
     //=== get account ===
     println(s"\nGet account - ${configPara.env}")
     val account: Try[Account] = GetAccount.getAccount(configPara)
@@ -97,6 +138,24 @@ object Helper {
       .map(CreateOrderFromShipment
         .createOrderFromShipment(_, configPara)).flatten
 
+    val order_id: Try[String] = orderFromShipment
+      .map(_.order.order_id)
+
+    //=== get order summary ===
+    println(s"\nGet order summary - ${configPara.env}")
+    order_id.map { x =>
+      val fileName: String = configPara.postConfig.account + "_" + x + "_" + Helper.todayDate + ".pdf"
+      GetOrderSummary
+        .getOrderSummary(x, configPara, fileName)
+      Order_File(x, fileName)
+    }
+  }
+
+
+  def create_order_summary_from_consignment(shipment_id: String, configPara: Input_Para): Try[Order_File] = {
+    //=== create order from shipment ===
+    println(s"\nCreate order from shipment - ${configPara.env}")
+    val orderFromShipment: Try[response.Order] = CreateOrderFromShipment.createOrderFromShipment(shipment_id, configPara)
     val order_id: Try[String] = orderFromShipment
       .map(_.order.order_id)
 

@@ -1,7 +1,9 @@
 package bran
 
+import bran.post.base.Shipments_Details
 import bran.post.helper._
-
+import bran.run.Run_Helper
+import scala.io.StdIn.{readLine}
 import scala.util.{Failure, Success, Try}
 
 case class Order_File(order_id: String, order_summary_file: String)
@@ -12,7 +14,7 @@ object Run {
     println(s"Configuration: ${configPara}")
 
     configPara.get.env match {
-      case Env("test") => Helper.get_order_summary(configPara.get).map { x =>
+      case Env("test") => Helper.create_shipments_labels(configPara.get).map { x =>
         println("Success - created order summary - test")
         MailerService
           .sendMessage("Do not reply - Order " + x.order_id + " - test",
@@ -23,9 +25,30 @@ object Run {
         case Failure(f) => println(f.getMessage)
       }
 
-      case Env("teest") => Helper.get_order_list(configPara.get)
+      case Env("teest") => {
+        // get shipment lists, in shipments JSON can find
+        val shipmentsDetails: Try[List[Shipments_Details]] = Run_Helper.getShipmentList(configPara)
+        println(s"================= ${shipmentsDetails.get.size} =========================\n")
 
-      case Env("prod") => ExcelHelper.getShipmentsDetails(configPara.get, getOrderSummary) match {
+        // map[Consignment, Shipment, Datetime], and write to Consignment_yyyyMMdd_Shipment.csv
+        val destination: String = Run_Helper.checkShipmentsForEveryConsignment(configPara, shipmentsDetails)
+
+        val name = readLine("Do you want to proceed (yes/no) -> ")
+        if(name.toUpperCase().equals("NO")) System.exit(0)
+
+        //create order from shipment and get order summary
+        val order_summaries: Try[Unit] = ExcelHelper.getOrderSummary(configPara.get).map { x =>
+          MailerService
+            .sendMessage("Do not reply - Order " + x.order_id + " - test",
+              "\nFYI - Shipments Orders Summary - teest\n",
+              x.order_summary_file)
+        }
+
+        if (order_summaries.isSuccess) println("All Success")
+
+      }
+
+      case Env("prod") => ExcelHelper.getShipmentsDetails(configPara.get, getOrderSummary _) match {
         case Success(s) => println("Success - send as email attachment")
         case Failure(f) => println(f.getMessage)
       }

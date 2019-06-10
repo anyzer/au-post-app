@@ -3,7 +3,7 @@ package bran.post.base.response
 import bran.post.base.Customer
 import bran.post.base.request.response.Price
 
-case class Shipments(shipments: List[Response_Shipment])
+case class Shipments(shipments: List[Response_Shipment], pagination: Option[Pagination])
 
 case class Response_Shipment(
                      shipment_id: String,
