@@ -39,7 +39,7 @@ object ExcelHelper {
   def checkShipmentsForAllConsignments(configPara: Input_Para, listOfShipments: List[Shipments_Details], getOrderSummary: (String, List[Shipments_Details]) => Map[String, Option[String]]): Try[Unit] = {
     val source = s"./${configPara.readFolder.path}/Consignment_${Helper.todayDate("yyyyMMdd")}.csv"
     val destination = s"./${configPara.readFolder.path}/Consignment_${Helper.todayDate("yyyyMMdd")}_Shipment.csv"
-    writeCsv(destination, s"CONSIGNMENT ,SHIPMENTS               ,Datetime \n", false)
+    writeCsv(destination, s"CONSIGNMENT ,SHIPMENTS               ,Datetime        ,ORDER STATUS \n", false)
 
     Try {
       val bufferedSource = Source.fromFile(source)

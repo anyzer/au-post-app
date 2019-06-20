@@ -38,6 +38,7 @@ object Run {
 
         //create order from shipment and get order summary
         val order_summaries: Try[Unit] = ExcelHelper.getOrderSummary(configPara.get).map { x =>
+          println("Order " + x.order_id + " is created successfully")
           MailerService
             .sendMessage("Do not reply - Order " + x.order_id + " - test",
               "\nFYI - Shipments Orders Summary - teest\n",

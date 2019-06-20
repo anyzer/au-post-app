@@ -1,5 +1,7 @@
 package bran
 
+import java.net.URL
+import scala.io.Source
 import bran.post.config.PostConfig
 import bran.post.helper._
 import org.scalatest.FunSuite
@@ -21,6 +23,23 @@ class QuickTest extends FunSuite {
 
   def readString(conf: Input_Para, str: Shipment_Details): Try[Unit] = {
     Try(str.shipment_id)
+  }
+
+
+  test("test either and fold") {
+    val content: Iterator[String] = getContent(new URL("https://alvinalexander.com/scala/how-use-fold-scala-option-some-none-syntax")).fold(Iterator(_), _.getLines())
+    val moreContent: Iterator[String] = getContent(new URL("http://google.com")).fold(Iterator(_), _.getLines())
+
+    content.foreach(x => println(x))
+//    println("=========================")
+//    moreContent.foreach(x => println(x))
+  }
+
+
+  def getContent(url: URL): Either[String, Source] = {
+    if (url.getHost.contains("google"))
+      Left("Requested URL is blocked")
+    else Right(Source.fromURL(url))
   }
 
 }
