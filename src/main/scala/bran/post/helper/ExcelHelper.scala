@@ -1,16 +1,13 @@
 package bran.post.helper
 
 import java.io.{BufferedWriter, File, FileWriter}
-import java.time.{LocalDateTime, ZoneId}
 
 import bran.Order_File
-import bran.post.base.{Shipments_Details, response}
-import bran.post.helper.ExcelHelper.writeCsv
+import bran.post.base.Shipments_Details
 import bran.post.utilities.{CreateOrderFromShipment, GetOrderSummary}
-import com.sun.net.httpserver.Authenticator.Failure
 
 import scala.io.Source
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 case class Shipment_Details(shipment_id: String, column_B: String, column_C: String)
 
@@ -39,7 +36,7 @@ object ExcelHelper {
   def checkShipmentsForAllConsignments(configPara: Input_Para, listOfShipments: List[Shipments_Details], getOrderSummary: (String, List[Shipments_Details]) => Map[String, Option[String]]): Try[Unit] = {
     val source = s"./${configPara.readFolder.path}/Consignment_${Helper.todayDate("yyyyMMdd")}.csv"
     val destination = s"./${configPara.readFolder.path}/Consignment_${Helper.todayDate("yyyyMMdd")}_Shipment.csv"
-    writeCsv(destination, s"CONSIGNMENT ,SHIPMENTS               ,Datetime        ,ORDER STATUS \n", false)
+    writeCsv(destination, s"CONSIGNMENT ,SHIPMENTS               ,Datetime       ,SHIPMENTS STATUS \n", false)
 
     Try {
       val bufferedSource = Source.fromFile(source)
@@ -47,20 +44,19 @@ object ExcelHelper {
       println(s"\nTheere are ${allLines.size} consignments in ${source}\n")
 
       for (line <- Source.fromFile(source).getLines()) {
-        println(s"Line: ${line}")
-        val map: Map[String, Option[String]] = getOrderSummary(line, listOfShipments)
-        val shipment_id: Option[String] = map.get(line).flatten
+        val consignmentToShipment: Map[String, Option[String]] = getOrderSummary(line, listOfShipments)
+        val shipment_id: Option[String] = consignmentToShipment.get(line).flatten
 
         if (shipment_id == None) {
           println(s"ERROR => Consignment <${line}> cannot find corresponding Shipment")
-          val writeString = s"${line},<Cannot find ShipmentId>,${Helper.todayDate}\n"
-          writeCsv(destination, writeString)
-        } else {
-          val writeString = s"${line},${shipment_id.get},${Helper.todayDate}\n"
-          writeCsv(destination, writeString)
+          writeCsv(destination, s"${line},ERROR-CannotFindShipment,${Helper.todayDate},N/A\n")
+        } else if(shipment_id.get.contains("Consignment_")) {
+          println(s"ERROR => <${shipment_id.get}> is invalid")
+          writeCsv(destination, s"${line},ERROR-${shipment_id.get},${Helper.todayDate},${shipment_id.get.split("_")(1)}\n")
+        }else {
+          writeCsv(destination, s"${line},${shipment_id.get},${Helper.todayDate},Created\n")
         }
       }
-
       bufferedSource.close()
     }
 
@@ -103,7 +99,9 @@ object ExcelHelper {
   def checkConsignmentsAndShipments(file: String): Try[Int] = {
     Try {
       val bufferedSource = Source.fromFile(file)
-      val errors: Int = bufferedSource.getLines().filter(x => x.contains("<Cannot find ShipmentId>")).size
+      val errors: Int = bufferedSource.getLines()
+        .filter(x => x.contains("ERROR"))
+        .size
       bufferedSource.close()
       errors
     }

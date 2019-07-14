@@ -1,19 +1,17 @@
 package bran.post.helper
 
-import java.time.{LocalDateTime, ZoneId}
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZoneId}
 
 import bran.Order_File
 import bran.post.base.request.response.Account
+import bran.post.base.response.{Response_Shipment, Shipments}
 import bran.post.base.{Items_Details, Shipments_Details, response}
-import bran.post.base.response.{OrderFromShipment, Order_List, Response_Shipment, Shipments}
 import bran.post.config.PostConfig
-import bran.post.constants.Constants
 import bran.post.utilities._
 import com.google.gson.{JsonObject, JsonParser}
 
-import scala.util.control.NonFatal
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Try}
 
 case class Env(env: String)
 
@@ -86,13 +84,21 @@ object Helper {
   }
 
 
-  // One Consignment has a matching Shipments
+  // One Consignment has a matching Shipments, multiple matching or status is not Created are all invalid consignment
   def compareConsignment(consignment_id: String, shipments_details: List[Shipments_Details]): Map[String, Option[String]] = {
-    val shipment = shipments_details.filter { x => itemsWithConsignment(consignment_id, x.items_details)}
+    val shipment: List[Shipments_Details] = shipments_details.filter { x => itemsWithConsignment(consignment_id, x.items_details)}
     if(shipment.size != 1) {
+      println(s"For the consignment ${consignment_id}, there are < ${shipment.size} > matching shipment(s)")
+      shipment.map(x => println(s"Shipment ID: ${x}"))
       Map(consignment_id -> None)
     }else {
-      Map(consignment_id -> Some(shipment.head.shipment_id))
+      val head = shipment.head
+      if(head.shipment_status.equals("Created")) {
+        Map(consignment_id -> Some(shipment.head.shipment_id))
+      } else {
+        println(s"For the consignment ${consignment_id}, its status < ${head.shipment_status} > is INVALID")
+        Map(consignment_id -> Some(s"Consignment_${head.shipment_status}"))
+      }
     }
   }
 
@@ -170,17 +176,6 @@ object Helper {
   }
 
 
-  //  @annotation.tailrec
-  //  def retry[T](n: Int)(fn: => T): T = {
-  //    Thread.sleep(500)
-  //    println(s"n ${n}")
-  //    println("Try Request ... ")
-  //    Try { fn } match {
-  //      case Success(x) => x
-  //      case Failure(e)  if (n > 1) => retry(n - 1)(fn)
-  //      case Failure(e) => throw e
-  //    }
-  //  }
   def retry[T](fib: List[Int])(f: => T): Try[T] =
     Try(f).recoverWith {
       case ex =>

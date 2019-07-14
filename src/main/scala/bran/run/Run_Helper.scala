@@ -30,14 +30,14 @@ object Run_Helper {
       case Success(s) => {
         ExcelHelper.checkConsignmentsAndShipments(destination) match {
           case Success(0) => println("All consignments find corresponding shipments\n")
-          case _ => println(s"TODO: Please check file ${destination} as one ore more Consignments do not have corresponding Shipments")
-            println(s"TODO: Search for <Cannot find ShipmentId> in Consignment_yyyyMMdd_Shipment.csv, and update the source file Consignment_yyyyMMdd.csv accordingly to continue")
+          case _ => println(s"TODO: Please check file ${destination} as \n(1) one ore more Consignments do not have corresponding shipments; \n(2) shipment(s) status in invalid")
+            println(s"\nTODO: Search for 'ERROR' in ${destination}, and update the source file Consignment_${Helper.todayDate("yyyyMMdd")}.csv accordingly")
             System.exit(1)
         }
       }
       case Failure(f) => {
         println("Error to find shipments id from consignments: " + f.getMessage)
-        println("Put Consignments Id in a file with the following naming convention: Consignment_yyyyMMdd.csv (use today's date)")
+        println(s"Put Consignments Id in a file with the following naming convention: Consignment_${Helper.todayDate("yyyyMMdd")}.csv")
         System.exit(1)
       }
     }

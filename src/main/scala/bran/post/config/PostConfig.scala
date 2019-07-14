@@ -10,7 +10,7 @@ case class PostConfig(base_url: String, authorization: String, account: String,
 object PostConfig {
 
   def get(setting: Env): PostConfig = {
-    val configs: Config = ConfigFactory.load("config.conf")
+    val configs: Config = ConfigFactory.load("application.conf")
 
     PostConfig(configs.getString(s"settings.${setting.env}.base_url"),
             configs.getString(s"settings.${setting.env}.authorization"),
