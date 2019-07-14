@@ -43,7 +43,7 @@ project/plugins/project/
 /data/
 /.settings/
 
-config.conf
+application.conf
 *.pdf
 
 credentials.json
