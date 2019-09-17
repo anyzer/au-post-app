@@ -1,7 +1,7 @@
 package bran.post.utilities
 
 import bran.post.base.request.response.Account
-import bran.post.base.request.{Item, Request_Shipment, Shipments}
+import bran.post.base.request.{Item_Req, Request_Shipment, Shipments}
 import bran.post.base.{Customer, response}
 import bran.post.constants.Constants
 import bran.post.helper.Input_Para
@@ -25,8 +25,8 @@ object CreateShipment extends RequestBase {
 
   //create shipment for creating orders
   def createCaseClass(account: Account): Request_Shipment = {
-    val item1: Item = Item("100.1", "12", "12", "2.123", "blocked", "7E55", true, false, None)
-    val item2: Item = Item("10", "10", "10", "1", "blocked", "7E55", true, false, None)
+    val item1: Item_Req = Item_Req("100.1", "12", "12", "2.123", "blocked", "7E55", true, false, None)
+    val item2: Item_Req = Item_Req("10", "10", "10", "1", "blocked", "7E55", true, false, None)
 
     val to: Customer = Customer("Blocked Carl", Some("business Name"), None, List("PO Box 123 to"),
       "Rye", "3941", "VIC", Some("0356567567"), Some("carl@gmai.co"),

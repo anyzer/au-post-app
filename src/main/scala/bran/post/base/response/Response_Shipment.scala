@@ -14,7 +14,7 @@ case class Response_Shipment(
                      sender_references: Option[List[String]],
                      from: Option[Customer],
                      to: Option[Customer],
-                     items: List[Item],
+                     items: Option[List[Item]],
                      options: Option_Shipment,
                      shipment_summary: Shipment_Summary,
                      order_id: Option[String],
@@ -23,7 +23,7 @@ case class Response_Shipment(
                    )
 
 case class Item(
-                 weight: Double,
+                 weight: Option[Double],
                  height: Option[Double],
                  length: Option[Double],
                  width: Option[Double],
@@ -32,7 +32,7 @@ case class Item(
                  safe_drop_enabled: Boolean,
                  allow_partial_delivery: Boolean,
                  item_id: String,
-                 item_reference: String,
+                 item_reference: Option[String],
                  tracking_details: Tracking_Details,
                  product_id: String,
                  item_summary: Item_Summary,

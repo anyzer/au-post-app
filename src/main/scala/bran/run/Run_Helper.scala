@@ -1,6 +1,7 @@
 package bran.run
 
 import bran.post.base.Shipments_Details
+import bran.post.base.response.Response_Shipment
 import bran.post.helper.{ExcelHelper, Helper, Input_Para}
 
 import scala.util.{Failure, Success, Try}
@@ -8,6 +9,10 @@ import scala.util.{Failure, Success, Try}
 object Run_Helper {
 
   def getShipmentList(configPara: Option[Input_Para]): Try[List[Shipments_Details]] = {
+
+    val temp: Try[List[Response_Shipment]] = Helper.get_shipments_list(configPara.get)
+    println(s"ggggg ${temp.get.size}")
+
     // get shipment lists, in shipments JSON can find
     val shipmentsDetails: Try[List[Shipments_Details]] = Helper.get_shipments_list(configPara.get)
       .map { x => Helper.getShipmentsDetails(x) }

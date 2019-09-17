@@ -55,7 +55,7 @@ object Helper {
     val shipments: Try[Shipments] = GetShipmentList.getShipmentList(0, configPara, "fileName")
     shipments.map { x =>
       println("There are " + x.shipments.size + " shipments")
-      println("In Pagination, there are " + x.pagination.map(y => y.total_number_of_records) + "shipments")
+      println("In Pagination, there are " + x.pagination.map(y => y.total_number_of_records) + " shipments")
       x.shipments
     }
   }
@@ -66,7 +66,13 @@ object Helper {
       val shipment_id: String = x.shipment_id
       val shipment_status: String = x.shipment_summary.status
 
-      val items: List[Items_Details] = x.items.map { m =>
+//      if(x.items == None) {
+//        println(s"Cannot find any items for the shipment ${shipment_id}")
+//        System.exit(1)
+//      }
+      println("hhhhhhhh")
+
+      val items: List[Items_Details] = x.items.get.map { m =>
         val item_id = m.item_id
         val item_consignment_id = m.tracking_details.consignment_id
         Items_Details(item_id, item_consignment_id)

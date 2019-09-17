@@ -9,7 +9,7 @@ Connect to AU Post RESTFul API to GetAccount, CreateShipment, CreateLabel, Creat
     * copy credentials to execution folder
     
 ### Environment
-    * test
+    * teest
     * prod
 
 ### Execution
